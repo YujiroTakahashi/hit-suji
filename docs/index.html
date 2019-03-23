@@ -7,17 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
     <!-- Site Properties -->
-    <title>Sticky Example - Semantic</title>
+    <title>hitSuji:blog</title>
 
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/codemirror@5.45.0/lib/codemirror.css">
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/codemirror@5.45.0/addon/hint/show-hint.css">
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/codemirror@5.45.0/addon/dialog/dialog.css">
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/codemirror@5.45.0/addon/search/matchesonscrollbar.css">
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/codemirror@5.45.0/theme/colorforth.css">
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/codemirror@5.45.0/theme/3024-day.css">
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/codemirror@5.45.0/theme/lesser-dark.css">
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/codemirror@5.45.0/theme/rubyblue.css">
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/codemirror@5.45.0/theme/the-matrix.css">
     <style type="text/css">
         body {
@@ -34,7 +27,6 @@
         }
         .ui.footer.segment {
             margin: 5em 0em 0em;
-            padding: 5em 0em;
         }
     </style>
 </head>
@@ -42,14 +34,26 @@
     <div class="ui fixed inverted menu">
         <div class="ui container">
             <a href="https://yujiro3.github.io/hit-suji/" class="header item">
-                <img class="logo" src="assets/images/logo.jpg">
+                <img class="logo" src="/hit-suji/assets/images/logo.jpg">
                 hitSuji
             </a>
-            <a href="https://yujiro3.github.io/hit-suji/" class="item">Home</a>
-            <div class="ui right simple dropdown item">
+            <a href="https://github.com/yujiro3/" class="item">GitHub</a>
+            <div class="ui simple dropdown item">
                 カテゴリ <i class="dropdown icon"></i>
                 <div class="menu">
-                    <a class="item" href="#">C/C++</a>
+                    <a class="item" href="/hit-suji/cpp/">C/C++</a>
+                    <a class="item" href="/hit-suji/hadoop/">Hadoop</a>
+                    <a class="item" href="/hit-suji/js/">JavaScript</a>
+                    <a class="item" href="/hit-suji/mysql/">MySQL</a>
+                    <a class="item" href="/hit-suji/nginx/">nginx</a>
+                    <a class="item" href="/hit-suji/php/">PHP</a>
+                    <a class="item" href="/hit-suji/ubuntu/">Ubuntu</a>                
+                </div>
+            </div>
+            <div class="ui simple dropdown item">
+                タイトル <i class="dropdown icon"></i>
+                <div class="menu">
+                    <a class="item" href="#install">Ubuntu初期インストールリスト</a>
                     <a class="item" href="#">Hadoop</a>
                     <a class="item" href="#">JavaScript</a>
                     <a class="item" href="#">MySQL</a>
@@ -62,9 +66,7 @@
     </div>
 
     <div class="ui main text container">
-        <h1 class="ui header">Ubuntu初期インストールリスト</h1>
-
-
+        <h1 class="ui header"><a name="install">Ubuntu初期インストールリスト</a></h1>
 
         Ubuntu-serverに最初に入れたソフト
 
@@ -113,50 +115,14 @@
     </div>
 
     <div class="ui inverted vertical footer segment">
-            <div class="ui center aligned container">
-              <div class="ui stackable inverted divided grid">
-                <div class="three wide column">
-                  <h4 class="ui inverted header">Group 1</h4>
-                  <div class="ui inverted link list">
-                    <a href="#" class="item">Link One</a>
-                    <a href="#" class="item">Link Two</a>
-                    <a href="#" class="item">Link Three</a>
-                    <a href="#" class="item">Link Four</a>
-                  </div>
-                </div>
-                <div class="three wide column">
-                  <h4 class="ui inverted header">Group 2</h4>
-                  <div class="ui inverted link list">
-                    <a href="#" class="item">Link One</a>
-                    <a href="#" class="item">Link Two</a>
-                    <a href="#" class="item">Link Three</a>
-                    <a href="#" class="item">Link Four</a>
-                  </div>
-                </div>
-                <div class="three wide column">
-                  <h4 class="ui inverted header">Group 3</h4>
-                  <div class="ui inverted link list">
-                    <a href="#" class="item">Link One</a>
-                    <a href="#" class="item">Link Two</a>
-                    <a href="#" class="item">Link Three</a>
-                    <a href="#" class="item">Link Four</a>
-                  </div>
-                </div>
-                <div class="seven wide column">
-                  <h4 class="ui inverted header">Footer Header</h4>
-                  <p>Extra space for a call to action inside the footer that could help re-engage users.</p>
-                </div>
-              </div>
-              <div class="ui inverted section divider"></div>
-              <img src="assets/images/logo.jpg" class="ui centered mini image">
-              <div class="ui horizontal inverted small divided link list">
-                <a class="item" href="#">Site Map</a>
-                <a class="item" href="#">Contact Us</a>
-                <a class="item" href="#">Terms and Conditions</a>
-                <a class="item" href="#">Privacy Policy</a>
-              </div>
+        <div class="ui center aligned container">
+            <img src="/hit-suji/assets/images/logo.jpg" class="ui centered mini image">
+            <div class="ui horizontal inverted small divided link list">
+                <a class="item" href="https://yujiro3.github.io/hit-suji/">GitHub</a>
+                <a class="item" href="https://qiita.com/yujiro3/">Qiita</a>
             </div>
-          </div>
+        </div>
+    </div>
 
 
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
