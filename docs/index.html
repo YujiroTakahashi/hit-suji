@@ -54,12 +54,10 @@
                 タイトル <i class="dropdown icon"></i>
                 <div class="menu">
                     <a class="item" href="#install">Ubuntu初期インストールリスト</a>
-                    <a class="item" href="#">Hadoop</a>
-                    <a class="item" href="#">JavaScript</a>
-                    <a class="item" href="#">MySQL</a>
-                    <a class="item" href="#">nginx</a>
-                    <a class="item" href="#">PHP</a>
-                    <a class="item" href="#">Ubuntu</a>                
+                    <a class="item" href="#sqap">Swap領域確保</a>
+                    <a class="item" href="#ufw">ファイアウォール設定</a>
+                    <a class="item" href="#lsyncd">lsyncdを利用したファイルの同期</a>
+                    <a class="item" href="#font">日本語フォントのインストール</a>
                 </div>
             </div>
         </div>
@@ -113,6 +111,381 @@
             <p>adminuser  ALL=(ALL:ALL) NOPASSWD:ALL</p>
         </div>
     </div>
+    <div class="ui divider"></div>
+
+    
+    <div class="ui main text container">
+        <h1 class="ui header"><a name="sqap">Swap領域確保</a></h1>
+<p><strong>1GBを確保</strong></p>
+<pre class="ui visible message">sudo mkdir /var/swap
+sudo dd if=/dev/zero of=/var/swap/swapfile bs=1024 count=1024000
+sudo mkswap /var/swap/swapfile
+sudo swapon /var/swap/swapfile
+</pre>
+<p><strong>free</strong></p>
+<pre class="ui visible message">
+             total       used       free     shared    buffers     cached
+Mem:        604376     536116      68260          0      31992     411644
+-/+ buffers/cache:      92480     511896
+Swap:      1023996         84    1023912
+</pre>
+<p><strong>fstabへ登録</strong></p>
+<pre class="ui visible message">
+sudo vi /etc/fstab
+
+/var/swap/swapfile      swap     swap   defaults        0 0
+</pre>
+<p>再起動時にSwap領域を有効にするために設定します。</p>
+    </div>
+    <div class="ui divider"></div>
+
+    <div class="ui main text container">
+        <h1 class="ui header"><a name="ufw">ファイアウォール設定</a></h1>
+<h2>ufwの利用</h2>
+<p><strong>ファイアーウォールを無効にする</strong></p>
+<pre class="ui visible message">
+sudo ufw disable
+</pre>
+<p><strong>すべてのアクセスを拒否に設定</strong></p>
+<pre class="ui visible message">
+sudo ufw default deny
+</pre>
+<p><strong>SSHを許可</strong></p>
+<pre class="ui visible message">
+sudo ufw allow ssh
+</pre>
+<p><strong>HTTPを許可</strong></p>
+<pre class="ui visible message">
+sudo ufw allow http
+</pre>
+<p><strong>HTTPSを許可</strong></p>
+<pre class="ui visible message">
+sudo ufw allow https
+</pre>
+<p><strong>MySQLをローカルネットワークだけ許可</strong></p>
+<pre class="ui visible message">
+sudo ufw allow from 192.168.11.0/24 to any port mysql
+</pre>
+<p><strong>ファイアーウォールを有効にする</strong></p>
+<pre class="ui visible message">
+sudo ufw enable
+</pre>
+<p><strong>プロキシサーバを無効にする</strong></p>
+<pre class="ui visible message">
+sudo ufw deny 3128/tcp
+</pre>
+<p><strong>ルールを削除する</strong></p>
+<pre class="ui visible message">
+sudo ufw delete DENY 3128/tcp
+</pre>
+<p><strong>設定確認</strong></p>
+<pre class="ui visible message">
+sudo ufw status
+
+Status: active
+
+To                         Action      From
+--                         ------      ----
+22                         ALLOW       Anywhere
+80                         ALLOW       Anywhere
+443                        ALLOW       Anywhere
+3306                       ALLOW       192.168.11.0/24
+</pre>
+<p><strong>ufwヘルプ</strong></p>
+<pre class="ui visible message">
+Commands:
+ enable                          enables the firewall
+ disable                         disables the firewall
+ default ARG                     set default policy
+ logging LEVEL                   set logging to LEVEL
+ allow ARGS                      add allow rule
+ deny ARGS                       add deny rule
+ reject ARGS                     add reject rule
+ limit ARGS                      add limit rule
+ delete RULE|NUM                 delete RULE
+ insert NUM RULE                 insert RULE at NUM
+ reset                           reset firewall
+ status                          show firewall status
+ status numbered                 show firewall status as numbered list of RULES
+ status verbose                  show verbose firewall status
+ show ARG                        show firewall report
+ version                         display version information
+
+Application profile commands:
+ app list                        list application profiles
+ app info PROFILE                show information on PROFILE
+ app update PROFILE              update PROFILE
+ app default ARG                 set default application policy
+</pre>
+<hr>
+<h2>確認</h2>
+<p><strong>現在有効な接続状況確認</strong></p>
+<pre class="ui visible message">
+netstat -antu
+
+Proto Recv-Q Send-Q Local Address           Foreign Address         State
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN
+tcp        0      0 127.0.0.1:3306          0.0.0.0:*               LISTEN
+tcp        0      0 127.0.0.1:6379          0.0.0.0:*               LISTEN
+</pre>
+<p>MySQLとMongoDBの設定ファイル内でローカル接続のみを有効に設定しているため<br />
+127.0.0.1の制限がある。</p>
+<p><strong>番号付き一覧表示</strong></p>
+<pre class="ui visible message">
+iptables -L --line-numbers
+</pre>
+<p><strong>TCPダンプで確認</strong></p>
+<pre class="ui visible message">
+sudo tcpdump -s 1600 -X -i eth0 src port 80
+sudo tcpdump -s 1600 -X -i eth0 dst port 80
+</pre>
+    </div>
+    <div class="ui divider"></div>
+
+    <div class="ui main text container">
+        <h1 class="ui header"><a name="lsyncd">lsyncdを利用したファイルの同期</a></h1>
+        <h2>lsyncd</h2>
+        <p><strong>lsyncdインストール</strong></p>
+<pre class="ui visible message">
+sudo aptitude -y install lsyncd
+</pre>
+<p><strong>lsyncd設定ファイル</strong></p>
+<pre class="ui visible message">
+sudo vi /etc/lsyncd/lsyncd.conf.lua
+</pre>
+<pre class="ui visible message">
+----
+-- Streaming configuration file for lsyncd.
+--
+settings = {
+    statusFile = "/var/run/lsyncd.stat",
+    statusInterval = 30,
+}
+
+sync { 
+    default.rsync, 
+    source="/home/mapred/",
+    target="slaves000:/home/mapred/",
+    rsyncOps={"-aruz", "--delete"}, 
+    delay=10 
+}
+sync { 
+    default.rsync, 
+    source="/home/mapred/",
+    target="slaves001:/home/mapred/",
+    rsyncOps={"-aruz", "--delete"}, 
+    delay=10 
+}
+sync { 
+    default.rsync, 
+    source="/home/mapred/",
+    target="slaves002:/home/mapred/",
+    rsyncOps={"-aruz", "--delete"}, 
+    delay=10 
+}
+</pre>
+<p><strong>lsyncdデーモン起動</strong></p>
+<pre class="ui visible message">
+sudo /etc/init.d/lsyncd start
+</pre>
+<hr>
+<h2>rsync</h2>
+<p><strong>rsyncd設定ファイル</strong></p>
+<pre class="ui visible message">
+sudo vi /etc/rsyncd.conf
+</pre>
+<pre class="ui visible message">
+# GLOBAL OPTIONS
+
+# pid file = /var/run/rsync.pid
+# log file = /var/log/rsync.log
+
+timeout = 600
+hosts allow *.sheeps.me
+read only = yes
+
+max connections = 2
+dont compress = *.gz *.tgz *.zip *.z *.rpm *.deb *.iso *.bz2 *.tbz
+
+[MapReduce]
+comment = PHP for Hadoop streaming
+path = /home/mapred
+uid = mapred
+gid = mapred
+</pre>
+<p><strong>rsyncdデフォルトファイル</strong></p>
+<pre class="ui visible message">
+sudo vi /etc/default/rsync
+</pre>
+<pre class="ui visible message">
+# start rsync in daemon mode from init.d script?
+#  only allowed values are "true", "false", and "inetd"
+#  Use "inetd" if you want to start the rsyncd from inetd,
+#  all this does is prevent the init.d script from printing a message
+#  about not starting rsyncd (you still need to modify inetd's config yourself).
+RSYNC_ENABLE=true
+</pre>
+<p><strong>rsyncデーモン起動</strong></p>
+<pre class="ui visible message">
+sudo /etc/init.d/rsync start
+</pre>
+<hr>
+<h2>SSHを利用したlsyncd設定</h2>
+<pre class="ui visible message">
+sudo vi /etc/lsyncd/lsyncd.conf.lua
+</pre>
+<pre class="ui visible message">
+----
+-- Streaming configuration file for lsyncd.
+--
+settings = {
+    statusFile = "/var/run/lsyncd.stat",
+    statusInterval = 30,
+}
+
+sync {
+    default.rsyncssh,
+    source="/home/mapred/",
+    host="hdfs@slaves000",
+    targetdir="/home/mapred/",
+    rsyncOps={"-aruz", "--delete"}, 
+    delay=10
+}
+
+sync {
+    default.rsyncssh,
+    source="/home/mapred/",
+    host="hdfs@slaves001",
+    targetdir="/home/mapred/",
+    rsyncOps={"-aruz", "--delete"}, 
+    delay=10
+}
+
+sync {
+    default.default.rsyncssh,
+    source="/home/mapred/",
+    host="hdfs@slaves002",
+    targetdir="/home/mapred/",
+    rsyncOps={"-aruz", "--delete"}, 
+    delay=10
+}
+</pre>
+<hr>
+<p><strong>rootのSSH設定</strong></p>
+<pre class="ui visible message">
+sudo vi /root/.ssh/config
+</pre>
+<pre class="ui visible message">
+Host slaves000
+    HostName            slaves000.sheeps.me
+    IdentityFile        /root/.ssh/id_rsa
+    User                hdfs
+
+Host slaves001
+    HostName            slaves001.sheeps.me
+    IdentityFile        /root/.ssh/id_rsa
+    User                hdfs
+
+Host slaves002
+    HostName            slaves002.sheeps.me
+    IdentityFile        /root/.ssh/id_rsa
+    User                hdfs
+</pre>
+<pre class="ui visible message">
+sudo cp $HADOOP_HOME/.ssh/id_rsa /root/.ssh/id_rsa
+sudo chmod 0600 /root/.ssh/id_rsa
+</pre>
+<p>Lsyncdからrsyncを実行するユーザーを変更する方法がわからないので<br />
+デフォルトのrootで実行させています。</p>
+<p>接続先が/root/.ssh/known_hostsに登録されていないとエラーとなりました。<br />
+予め接続して登録しておく必要があるようです。</p>
+    </div>
+    <div class="ui divider"></div>
+
+    <div class="ui main text container">
+        <h1 class="ui header"><a name="font">日本語フォントのインストール</a></h1>
+
+        <h2>日本語フォントのインストール</h2>
+<p><strong>フォント設定ツールのインストール</strong></p>
+<pre class="ui visible message">
+sudo aptitude -y install fontconfig
+</pre>
+<p><strong>フォント一覧を確認</strong></p>
+<pre class="ui visible message">
+fc-list
+</pre>
+<pre class="ui visible message">
+/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf: DejaVu Serif:style=Book
+/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf: DejaVu Sans:style=Book
+/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono-Bold.ttf: DejaVu Sans Mono:style=Bold
+/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif-Bold.ttf: DejaVu Serif:style=Bold
+/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans-Bold.ttf: DejaVu Sans:style=Bold
+/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf: DejaVu Sans Mono:style=Book
+</pre>
+<hr>
+<p>好きなフォントをインストールします。</p>
+<p><strong>Takaoフォント</strong></p>
+<pre class="ui visible message">
+sudo aptitude -y install fonts-takao
+</pre>
+<p><strong>IPAフォント</strong></p>
+<pre class="ui visible message">
+sudo aptitude -y install fonts-ipafont
+</pre>
+<p><strong>IPAexフォント</strong></p>
+<pre class="ui visible message">
+sudo aptitude -y install otf-ipaexfont-gothic otf-ipaexfont-mincho
+</pre>
+<p><strong>梅フォント</strong></p>
+<pre class="ui visible message">
+sudo aptitude -y install fonts-horai-umefont
+</pre>
+<p><strong>UmePlusフォント</strong></p>
+<pre class="ui visible message">
+sudo aptitude -y install fonts-umeplus
+</pre>
+<p><strong>さざなみフォント</strong></p>
+<pre class="ui visible message">
+sudo aptitude -y install ttf-sazanami-gothic ttf-sazanami-mincho
+</pre>
+<p><strong>東風フォント</strong></p>
+<pre class="ui visible message">
+sudo aptitude -y install ttf-kochi-gothic ttf-kochi-mincho
+</pre>
+<p><strong>VLフォント</strong></p>
+<pre class="ui visible message">
+sudo aptitude -y install ttf-vlgothic
+</pre>
+<hr>
+<p><strong>IPAフォントを入れた場合</strong></p>
+<pre class="ui visible message">
+sudo aptitude -y install fonts-ipafont
+fc-list
+</pre>
+<pre class="ui visible message">
+/usr/share/fonts/opentype/ipafont-mincho/ipam.ttf: IPAMincho,IPA明朝:style=Regular
+/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf: DejaVu Serif:style=Book
+/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf: DejaVu Sans:style=Book
+/usr/share/fonts/opentype/ipafont-gothic/ipagp.ttf: IPAPGothic,IPA Pゴシック:style=Regular
+/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono-Bold.ttf: DejaVu Sans Mono:style=Bold
+/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif-Bold.ttf: DejaVu Serif:style=Bold
+/usr/share/fonts/opentype/ipafont-mincho/ipamp.ttf: IPAPMincho,IPA P明朝:style=Regular
+/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf: IPAGothic,IPAゴシック:style=Regular
+/usr/share/fonts/truetype/fonts-japanese-mincho.ttf: IPAMincho,IPA明朝:style=Regular
+/usr/share/fonts/truetype/fonts-japanese-gothic.ttf: IPAGothic,IPAゴシック:style=Regular
+/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans-Bold.ttf: DejaVu Sans:style=Bold
+/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf: DejaVu Sans Mono:style=Book
+</pre>
+<p><strong>Yahoo!ジャパンのスクリーンショット</strong></p>
+<pre class="ui visible message">
+phantomjs /usr/share/phantomjs/examples/rasterize.js http://www.yahoo.co.jp/ yahoo.png
+</pre>
+<p>文字化けせずにスクリーンショットが撃てるはすです。</p>
+
+
+    </div>
+    <div class="ui divider"></div>
 
     <div class="ui inverted vertical footer segment">
         <div class="ui center aligned container">
