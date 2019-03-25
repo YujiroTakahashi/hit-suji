@@ -53,67 +53,246 @@
             <div class="ui simple dropdown item">
                 タイトル <i class="dropdown icon"></i>
                 <div class="menu">
-                    <a class="item" href="#install">Ubuntu初期インストールリスト</a>
-                    <a class="item" href="#">Hadoop</a>
-                    <a class="item" href="#">JavaScript</a>
-                    <a class="item" href="#">MySQL</a>
-                    <a class="item" href="#">nginx</a>
-                    <a class="item" href="#">PHP</a>
-                    <a class="item" href="#">Ubuntu</a>                
+                    <a class="item" href="#proonga">PHP bindings for Groonga.</a>
+                    <a class="item" href="#php">PHP エクステンションを作る</a>
+                    <a class="item" href="#ifstream">std::ifstreamでファイルの中身を全部取得する方法</a>
+                    <a class="item" href="#configure">configure: error: wrong “***” lib version or lib not found</a>
+                    <a class="item" href="#exchanger">Exchanger：持続接続型サーバ</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="ui main text container">
-        <h1 class="ui header"><a name="install">Ubuntu初期インストールリスト</a></h1>
+<div class="ui main text container">
+<h1 class="ui header"><a name="proonga">PHP bindings for Groonga.</a></h1>
+<p>Proong</p>
+<p>GroongaのPHPライブラリを作っています。<br />
+<a href="https://github.com/Yujiro3/proonga">PHP5:Proonga</a></p><br>
+<a href="https://github.com/YujiroTakahashi/proonga">PHP7:Proonga</a></p><br>
+<p>インストール<br />
+Groongaライブラリ</p>
+<pre class="ui visible message">
+$ sudo aptitude install -y libgroonga0 libgroonga-dev
+Groonga v4.0.7で追加されたC-APIを利用しています。
+最新版のライブラリを利用してください。
+</pre>
+<p>proongaのインストール</p>
+<pre class="ui visible message">
+$ git clone https://github.com/Yujiro3/proonga.git
+$ cd ./proonga
+$ phpize
+$ ./configure
+$ make
+$ sudo -s
+# make install
+# cd /etc/php5/mods-available
+# echo extension=groonga.so > proonga.ini
+# cd /etc/php5/conf.d
+# ln -s ../mods-available/proonga.ini ./30-proonga.ini
+</pre>
+<p>php_json_encode_exを利用してます。<br />
+php5-jsonを有効にしてください。<br />
+CentOSなどでは、php-commonに含まれているので<br />
+proonga.iniの読み込みタイミングに気をつけてください。</p>
+<p>phpの下位互換用の分岐を書いていません。<br />
+php5.3.x以上で動くと思いますが、PHP 5.5.18で開発しています。</p>
+<p>クラス一覧<br />
+<a href="http://qiita.com/Yujiro3/items/cb03abcc71bbb2f883f7">Groongaクラス</a><br />
+<a href="http://qiita.com/Yujiro3/items/aa751a66ce4fc37f4aea">GCommandクラス</a><br />
+<a href="http://qiita.com/Yujiro3/items/1b5cea045621f67100bc">GTableクラス</a><br />
+<a href="http://qiita.com/Yujiro3/items/241e9f561be14927e6be">GColumnクラス</a><br />
+<a href="http://qiita.com/Yujiro3/items/3f876a277e410fb1b631">GLoadクラス</a><br />
+<a href="http://qiita.com/Yujiro3/items/45ee01c107f2fa17c6c3">GDeleteクラス</a><br />
+<a href="http://qiita.com/Yujiro3/items/c59094e2c83970bf224f">GSelectクラス</a></p>
+<p>サンプル<br />
+<a href="https://gist.github.com/Yujiro3/1ce4908b191cfaf77b5d">micro_blog.php</a><br />
+コード</p>
+<pre class="ui visible message">
+/* select --table Users --match_columns name,location_str,description --query "New York" --output_columns _key,name */
+$result = $gdb->table('Users')
+    ->select()
+    ->matchColumns('name,location_str,description')
+    ->query('"New York"')
+    ->outputColumns('_key,name')
+    ->exec(true);
 
-        Ubuntu-serverに最初に入れたソフト
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_BIGINT_AS_STRING);
+</pre>
+<p>結果</p>
+<pre class="ui visible message">
+[
+    [
+        [
+            1
+        ],
+        [
+            [
+                "_key",
+                "ShortText"
+            ],
+            [
+                "name",
+                "ShortText"
+            ]
+        ],
+        [
+            "bob",
+            "Bob"
+        ]
+    ]
+]
+</pre>
+<p>Groongaの組み込みコマンドを実行するクラス群です。<br />
+極力ソースを書かないように心がけたのでバグも少ないはずです。</p>
+<p>CentOSでzend_call_method_with_*_params()関数がうまく動かなかったので<br />
+MongoDBのバインディングとかが使っている方法を試してみました。<br />
+とりあえず問題ないようです。</p>
+<p>Groongaの組み込みコマンドが楽ちん過ぎて普通書き方に戻れない。。。</p>
+<p>お役立ちリンク<br />
+<a href="http://motel-on-jupiter.sakuraweb.com/?p=40">Groonga Cライブラリを使う上で知っておいてほしいこと</a></p>
+<p><a href="http://createfield.com/Groonga%E9%96%A2%E9%80%A3%E3%81%AE%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88">Groonga関連のドキュメント</a></p>
+<p><a href="http://qiita.com/Yujiro3/items/4a7f83bda17a5037a16b">Groonga組み込みコマンドの利用</a></p>
+</div>
 
-        <h3>コンパイルとかで使うもの</h3>
+<div class="ui main text container">
+<h1 class="ui header"><a name="php">PHP エクステンションを作る</a></h1>
+<p>Websocketなどの持続接続型サーバ</p>
+<p><strong>Exchangerとは</strong><br />
+Websocketなど接続が持続する処理にFasctCGIを利用して処理できるサーバです。</p>
+<p>[<a href="https://github.com/Yujiro3/exchanger">github:exchanger</a>]<br />
+<a href="https://github.com/Yujiro3/exchanger"><img src="/hit-suji/assets/images/2013/11/exchanger.png" alt="exchanger" class="alignnone size-full wp-image-215" /></a></p>
+<p><strong>Exchangerフロー</strong><br />
+<img src="/hit-suji/assets/images/2013/11/001.png" alt="001" class="alignnone size-full wp-image-213" srcset="/hit-suji/assets/images/2013/11/001.png 415w, /hit-suji/assets/images/2013/11/001-256x300.png 256w, /hit-suji/assets/images/2013/11/001-128x150.png 128w" sizes="(max-width: 415px) 100vw, 415px" /><br />
+接続処理はExchangerサーバが処理し、アプリケーション処理はFastCGI(php5-fpm)で行います。</p>
+<p><img src="/hit-suji/assets/images/2013/11/002.png" alt="002" class="alignnone size-full wp-image-214" srcset="/hit-suji/assets/images/2013/11/002.png 420w, /hit-suji/assets/images/2013/11/002-223x300.png 223w, /hit-suji/assets/images/2013/11/002-111x150.png 111w" sizes="(max-width: 420px) 100vw, 420px" /></p>
+<hr>
+<p><strong>チャットアプリ</strong><br />
+<img src="/hit-suji/assets/images/2013/08/chat001.png" alt="" title="chat001" class="alignnone size-full wp-image-166" srcset="/hit-suji/assets/images/2013/08/chat001.png 470w, /hit-suji/assets/images/2013/08/chat001-246x300.png 246w, /hit-suji/assets/images/2013/08/chat001-123x150.png 123w" sizes="(max-width: 470px) 100vw, 470px" /></p>
+<p>・8888ポートの待受をexchangerサーバ<br />
+・アプリケーション処理をphp5-fpm<br />
+・ブラウザ側処理はjavascript</p>
+<hr>
+<strong>感想</strong><br />
+私は、PHPerと思います。<br />
+ExchangerはC++で作成しました。<br />
+C言語をまともに使ったのも５年ぶりぐらい、C++はVC以来なので10年以上ぶり<br />
+C++の書き方が合っているのか、。。。ではあります。</p>
+<p>fluentdをPHPでも作ってしまえと思いphp5-tailを作ったときにモジュールを調べました。<br />
+その時にlibeventにヒットしました。<br />
+phpからもlibeventは簡単に使えて、websocketサーバなども作ってみました。<br />
+その時に、phpをサーバとして使ってよいものか？<br />
+下手にCで作るよりはphpに任せたほうがまともに動くだろうとは思います。</p>
+<p>私は、PHPが好きなんです。<br />
+リアルタイム処理をnode.jsに全部持っていかれるのが嫌なのです。<br />
+PHPでテンプレートエンジンを使うバカが大っ嫌いなのです。</p>
+<p>nginxなどから直接、FastCGIでwebsocketが使えないのかな？<br />
+調べた限り納得できるものがなかったので作ってみたという感じです。</p>
+<p>幸いlibeventがあまりにも手軽なため、C++で作ることができました。</p>
+<p>Exchangerは、FastCGIをアプリケーション処理に使います。<br />
+ExchangerとFastCGIの共有リソースとしてRedisを使います。</p>
+<p>自分の好きな言語でリアルタイム処理のアプリケーションが作れるようになると思います。</p>
+<hr>
+<strong>ToDo</strong><br />
+・SSL/TLS処理の実装(テストなどがまだ)<br />
+・セキュリティ強化<br />
+・再接続関連<br />
+・サンプルアプリ(node.jsから移植)</p>
+</div>
         
-        <div class="ui visible message">
-            <p>sudo aptitude install -y gcc g++ make cmake curl pkg-config zlibc git ssh</p>
-            <p>sudo aptitude install -y bison libncurses5-dev libncursesw5-dev sysv-rc-conf</p>
-        </div>
-        
-        <h3>パッケージのインストール先</h3>
-        
-        <div class="ui visible message">
-            <p>dpkg -L [パッケージ名]</p>
-            <p>dpkg -L mongo</p>
-        </div>
-        
-        <h3>ユーザー追加</h3>
-        
-        <div class="ui visible message">
-            <p>sudo useradd -d /home/adminuser -m -s /bin/bash adminuser</p>
-            <p>sudo locale-gen ja_JP.UTF-8</p>
-            <p>sudo dpkg-reconfigure locales</p>
-        </div>
-        
-        <div class="ui visible message">
-            <p>Generating locales...</p>
-            <p>  en_US.UTF-8... done</p>
-            <p>  ja_JP.UTF-8... up-to-date</p>
-            <p>Generation complete.</p>
-        </div>
-        
-        <h3>言語追加</h3>
-        
-        <div class="ui visible message">
-            <p>sudo aptitude -y install locales</p>
-        </div>
-        
-        <h3>sudo設定</h3>
-        <div class="ui visible message">
-            <p>visudo</p>
-        </div>
-        <div class="ui visible message">
-            <p>adminuser  ALL=(ALL:ALL) NOPASSWD:ALL</p>
-        </div>
-    </div>
+<div class="ui main text container">
+<h1 class="ui header"><a name="ifstream">std::ifstreamでファイルの中身を全部取得する方法</a></h1>
+<p>ifstreamでファイルの中身を全部取得する方法</p>
+<p><strong>一度に全部のデータを取得</strong><br />
+<form><textarea id="code" name="code">
+char filename[] = &quot;test.txt&quot;;
+std::string buf();
+std::ifstream ifs(filename, std::ifstream::binary);
+buf.assign(
+    (std::istreambuf_iterator&lt;char&gt;(ifs)),
+    std::istreambuf_iterator&lt;char&gt;()
+);
+</textarea></form>
+</div>
 
+<div class="ui main text container">
+<h1 class="ui header"><a name="configure">configure: error: wrong “***” lib version or lib not found</a></h1>
+<p>./configure実行時のエラー</p>
+<p><strong>コンパイル時のライブラリ認識エラー</strong></p>
+<pre class="ui visible message">
+phpize
+./configure
+
+configure: error: wrong "***" lib version or lib not found
+</pre>
+<p><strong>ライブラリ一覧に存在するか確認</strong></p>
+<pre class="ui visible message">
+$ ldconfig -p | grep "***"
+</pre>
+<p>インストールしたはずのライブラリ名を検索してなかったら<br />
+ライブラリリストを更新させます。</p>
+<p><strong>ライブラリリストの更新</strong></p>
+<pre class="ui visible message">
+sudo ldconfig
+</pre>
+<pre class="ui visible message">
+ldconfig -p |grep libevent
+        libevent_pthreads-2.0.so.5 (libc6,x86-64) => /usr/local/lib/libevent_pthreads-2.0.so.5
+        libevent_pthreads-2.0.so.5 (libc6,x86-64) => /usr/lib/x86_64-linux-gnu/libevent_pthreads-2.0.so.5
+        libevent_openssl-2.0.so.5 (libc6,x86-64) => /usr/lib/x86_64-linux-gnu/libevent_openssl-2.0.so.5
+        libevent_extra-2.0.so.5 (libc6,x86-64) => /usr/local/lib/libevent_extra-2.0.so.5
+        libevent_extra-2.0.so.5 (libc6,x86-64) => /usr/lib/x86_64-linux-gnu/libevent_extra-2.0.so.5
+        libevent_core-2.0.so.5 (libc6,x86-64) => /usr/local/lib/libevent_core-2.0.so.5
+        libevent_core-2.0.so.5 (libc6,x86-64) => /usr/lib/x86_64-linux-gnu/libevent_core-2.0.so.5
+        libevent-2.0.so.5 (libc6,x86-64) => /usr/local/lib/libevent-2.0.so.5
+        libevent-2.0.so.5 (libc6,x86-64) => /usr/lib/x86_64-linux-gnu/libevent-2.0.so.5
+</pre>
+</div>
+
+<div class="ui main text container">
+<h1 class="ui header"><a name="exchanger">Exchanger：持続接続型サーバ</a></h1>
+<p>Websocketなどの持続接続型サーバ</p>
+<p><strong>Exchangerとは</strong><br />
+Websocketなど接続が持続する処理にFasctCGIを利用して処理できるサーバです。</p>
+<p>[<a href="https://github.com/Yujiro3/exchanger">github:exchanger</a>]<br />
+<a href="https://github.com/Yujiro3/exchanger"><img src="/hit-suji/assets/images/2013/11/exchanger.png" alt="exchanger" class="alignnone size-full wp-image-215" /></a></p>
+<p><strong>Exchangerフロー</strong><br />
+<img src="/hit-suji/assets/images/2013/11/001.png" alt="001" class="alignnone size-full wp-image-213" srcset="/hit-suji/assets/images/2013/11/001.png 415w, /hit-suji/assets/images/2013/11/001-256x300.png 256w, /hit-suji/assets/images/2013/11/001-128x150.png 128w" sizes="(max-width: 415px) 100vw, 415px" /><br />
+接続処理はExchangerサーバが処理し、アプリケーション処理はFastCGI(php5-fpm)で行います。</p>
+<p><img src="/hit-suji/assets/images/2013/11/002.png" alt="002" class="alignnone size-full wp-image-214" srcset="/hit-suji/assets/images/2013/11/002.png 420w, /hit-suji/assets/images/2013/11/002-223x300.png 223w, /hit-suji/assets/images/2013/11/002-111x150.png 111w" sizes="(max-width: 420px) 100vw, 420px" /></p>
+<hr>
+<p><strong>チャットアプリ</strong><br />
+<img src="/hit-suji/assets/images/2013/08/chat001.png" alt="" title="chat001" class="alignnone size-full wp-image-166" srcset="/hit-suji/assets/images/2013/08/chat001.png 470w, /hit-suji/assets/images/2013/08/chat001-246x300.png 246w, /hit-suji/assets/images/2013/08/chat001-123x150.png 123w" sizes="(max-width: 470px) 100vw, 470px" /></p>
+<p>・8888ポートの待受をexchangerサーバ<br />
+・アプリケーション処理をphp5-fpm<br />
+・ブラウザ側処理はjavascript</p>
+<hr>
+<strong>感想</strong><br />
+私は、PHPerと思います。<br />
+ExchangerはC++で作成しました。<br />
+C言語をまともに使ったのも５年ぶりぐらい、C++はVC以来なので10年以上ぶり<br />
+C++の書き方が合っているのか、。。。ではあります。</p>
+<p>fluentdをPHPでも作ってしまえと思いphp5-tailを作ったときにモジュールを調べました。<br />
+その時にlibeventにヒットしました。<br />
+phpからもlibeventは簡単に使えて、websocketサーバなども作ってみました。<br />
+その時に、phpをサーバとして使ってよいものか？<br />
+下手にCで作るよりはphpに任せたほうがまともに動くだろうとは思います。</p>
+<p>私は、PHPが好きなんです。<br />
+リアルタイム処理をnode.jsに全部持っていかれるのが嫌なのです。<br />
+PHPでテンプレートエンジンを使うバカが大っ嫌いなのです。</p>
+<p>nginxなどから直接、FastCGIでwebsocketが使えないのかな？<br />
+調べた限り納得できるものがなかったので作ってみたという感じです。</p>
+<p>幸いlibeventがあまりにも手軽なため、C++で作ることができました。</p>
+<p>Exchangerは、FastCGIをアプリケーション処理に使います。<br />
+ExchangerとFastCGIの共有リソースとしてRedisを使います。</p>
+<p>自分の好きな言語でリアルタイム処理のアプリケーションが作れるようになると思います。</p>
+<hr>
+<strong>ToDo</strong><br />
+・SSL/TLS処理の実装(テストなどがまだ)<br />
+・セキュリティ強化<br />
+・再接続関連<br />
+・サンプルアプリ(node.jsから移植)</p>
+</div>
+                        
     <div class="ui inverted vertical footer segment">
         <div class="ui center aligned container">
             <img src="/hit-suji/assets/images/logo.jpg" class="ui centered mini image">
@@ -128,6 +307,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.45.0/lib/codemirror.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.45.0/mode/clike/clike.js"></script>
 <script>
     $(document).ready(function() {
         // fix main menu to page on passing
@@ -149,6 +329,12 @@
         // show dropdown on hover
         $('.main.menu  .ui.dropdown').dropdown({
             on: 'hover'
+        });
+
+        var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+            mode: "text/x-c++src",
+            theme: "the-matrix",
+            lineNumbers: true
         });
     });
 </script>

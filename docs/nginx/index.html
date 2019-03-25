@@ -53,66 +53,739 @@
             <div class="ui simple dropdown item">
                 タイトル <i class="dropdown icon"></i>
                 <div class="menu">
-                    <a class="item" href="#install">Ubuntu初期インストールリスト</a>
-                    <a class="item" href="#">Hadoop</a>
-                    <a class="item" href="#">JavaScript</a>
-                    <a class="item" href="#">MySQL</a>
-                    <a class="item" href="#">nginx</a>
-                    <a class="item" href="#">PHP</a>
-                    <a class="item" href="#">Ubuntu</a>                
+                    <a class="item" href="#libevent">Libevent</a>
+                    <a class="item" href="#install">nginxとphpのインストール</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="ui main text container">
-        <h1 class="ui header"><a name="install">Ubuntu初期インストールリスト</a></h1>
+<div class="ui main text container">
+<h1 class="ui header"><a name="libevent">Libevent</a></h1>
+<p>ベンチマーク</p>
+<p><strong>abによる比較</strong><br />
+簡易HTTPサーバを作成してベンチマークを行いました。</p>
+<p>ベンチ対象のサーバ<br />
+　・<a href="http://libevent.org/">libevent1</a>…C言語<br />
+　・<a href="http://libevent.org/">libevent2</a>…C言語<br />
+　・<a href="http://jp2.php.net/manual/ja/book.event.php">libevent2</a>…PHP言語<br />
+　・<a href="http://nodejs.jp/">node.js</a>　…JavaScript<br />
+　・<a href="http://wiki.nginx.org/">nginx</a><br />
+　・<a href="http://shortfin.io/">shortfin</a></p>
+<p></p>
+<hr>
+<p><strong>ベンチマークリスト</strong></p>
+<table class="table table-bordered table-striped">
+<tbody>
+<tr>
+<td></td>
+<th>Requests/s</th>
+<th>min</th>
+<th>median</th>
+<th>max</th>
+</tr>
+<tr>
+<th>libevent1</th>
+<td>5555.34</td>
+<td>47</td>
+<td>87</td>
+<td>125</td>
+</tr>
+<tr>
+<th>libevent2</th>
+<td>5207.06</td>
+<td>51</td>
+<td>91</td>
+<td>113</td>
+</tr>
+<tr>
+<th>PHP</th>
+<td>5013.12</td>
+<td>53</td>
+<td>89</td>
+<td>270</td>
+</tr>
+<tr>
+<th>JavaScript</th>
+<td>2042.88</td>
+<td>2</td>
+<td>47</td>
+<td>912</td>
+</tr>
+<tr>
+<th>nginx</th>
+<td>4612.45</td>
+<td>50</td>
+<td>81</td>
+<td>137</td>
+</tr>
+<tr>
+<th>shortfin</th>
+<td>5240.77</td>
+<td>12</td>
+<td>19</td>
+<td>40</td>
+</tr>
+</tbody>
+</table>
+<p></p>
+<hr>
+<p><strong>abのインストール</strong></p>
+<pre class="ui visible message">
+$ sudo aptitude install apache2-utils
+</pre>
+<p>[<a href="http://blog.verygoodtown.com/2012/05/apache-bench-ab/">Apache Benchを使った負荷テストのやり方</a>]</p>
+<hr>
+<p><strong>libevent1</strong></p>
+<pre class="ui visible message">
+$ ab -n 5000 -c 500 http://localhost:9090/
+This is ApacheBench, Version 2.3 <$Revision: 655654 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
 
-        Ubuntu-serverに最初に入れたソフト
+Benchmarking localhost (be patient)
+Completed 500 requests
+Completed 1000 requests
+Completed 1500 requests
+Completed 2000 requests
+Completed 2500 requests
+Completed 3000 requests
+Completed 3500 requests
+Completed 4000 requests
+Completed 4500 requests
+Completed 5000 requests
+Finished 5000 requests
 
-        <h3>コンパイルとかで使うもの</h3>
-        
-        <div class="ui visible message">
-            <p>sudo aptitude install -y gcc g++ make cmake curl pkg-config zlibc git ssh</p>
-            <p>sudo aptitude install -y bison libncurses5-dev libncursesw5-dev sysv-rc-conf</p>
-        </div>
-        
-        <h3>パッケージのインストール先</h3>
-        
-        <div class="ui visible message">
-            <p>dpkg -L [パッケージ名]</p>
-            <p>dpkg -L mongo</p>
-        </div>
-        
-        <h3>ユーザー追加</h3>
-        
-        <div class="ui visible message">
-            <p>sudo useradd -d /home/adminuser -m -s /bin/bash adminuser</p>
-            <p>sudo locale-gen ja_JP.UTF-8</p>
-            <p>sudo dpkg-reconfigure locales</p>
-        </div>
-        
-        <div class="ui visible message">
-            <p>Generating locales...</p>
-            <p>  en_US.UTF-8... done</p>
-            <p>  ja_JP.UTF-8... up-to-date</p>
-            <p>Generation complete.</p>
-        </div>
-        
-        <h3>言語追加</h3>
-        
-        <div class="ui visible message">
-            <p>sudo aptitude -y install locales</p>
-        </div>
-        
-        <h3>sudo設定</h3>
-        <div class="ui visible message">
-            <p>visudo</p>
-        </div>
-        <div class="ui visible message">
-            <p>adminuser  ALL=(ALL:ALL) NOPASSWD:ALL</p>
-        </div>
-    </div>
+
+Server Software:
+Server Hostname:        localhost
+Server Port:            9090
+
+Document Path:          /
+Document Length:        87 bytes
+
+Concurrency Level:      500
+Time taken for tests:   0.900 seconds
+Complete requests:      5000
+Failed requests:        0
+Write errors:           0
+Total transferred:      755000 bytes
+HTML transferred:       435000 bytes
+Requests per second:    5555.34 [#/sec] (mean)
+Time per request:       90.004 [ms] (mean)
+Time per request:       0.180 [ms] (mean, across all concurrent requests)
+Transfer rate:          819.20 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       31   41   2.8     42      48
+Processing:     7   46   3.1     46      84
+Waiting:        4   27  11.0     27      51
+Total:         47   87   4.1     87     125
+
+Percentage of the requests served within a certain time (ms)
+  50%     87
+  66%     89
+  75%     89
+  80%     90
+  90%     91
+  95%     92
+  98%     92
+  99%     92
+ 100%    125 (longest request)
+</pre>
+<p><strong>httpd1.c</strong><br />
+<form><textarea id="code1" name="code1">
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;event.h&gt;
+#include &lt;evhttp.h&gt;
+/**
+ * コールバック
+ */
+static void send_document_cb(struct evhttp_request *req, void *arg) {
+	struct evbuffer *evb = NULL;
+	evb = evbuffer_new();
+	if (!evb) {
+		fprintf(stderr, &quot;evbufferの生成に失敗しました。\n&quot;);
+		exit(1);
+	}
+	evbuffer_add_printf(
+		evb,
+		&quot;&lt;html&gt;\n&quot;
+		&quot;&lt;head&gt;\n&quot;
+		&quot;&lt;title&gt;libevent&lt;/title&gt;\n&quot;
+		&quot;&lt;/head&gt;\n&quot;
+		&quot;&lt;body&gt;\n&quot;
+		&quot;libeventテスト\n&quot;
+		&quot;&lt;/body&gt;\n&quot;
+		&quot;&lt;/html&gt;\n&quot;
+	);
+	evhttp_send_reply(req, 200, &quot;OK&quot;, evb);
+	evbuffer_free(evb);
+}
+/**
+ * メイン
+ */
+int main() {
+	struct evhttp *http;
+	unsigned short port = 9090;
+	event_init();
+	/* アドレス・ポート指定 */
+	http = evhttp_start(&quot;0.0.0.0&quot;, port);
+	if (!http) {
+		fprintf(stderr, &quot;evhttpの生成に失敗しました。\n&quot;);
+		return 1;
+	}
+	// evhttp_set_cb(http, &quot;/dump&quot;, dump_request_cb, NULL);
+	/* デフォルトアクセス */
+	evhttp_set_gencb(http, send_document_cb, NULL);
+	event_dispatch();
+	evhttp_free(http);
+	return 0;
+}
+</textarea></form>
+
+<p><strong>コンパイル</strong></p>
+<pre class="ui visible message">
+gcc -L/usr/lib -levent -o httpd1 httpd1.c
+</pre>
+<hr>
+<p><strong>libevent2</strong></p>
+<pre class="ui visible message">
+$ ab -n 5000 -c 500 http://localhost:9090/
+This is ApacheBench, Version 2.3 <$Revision: 655654 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+Completed 500 requests
+Completed 1000 requests
+Completed 1500 requests
+Completed 2000 requests
+Completed 2500 requests
+Completed 3000 requests
+Completed 3500 requests
+Completed 4000 requests
+Completed 4500 requests
+Completed 5000 requests
+Finished 5000 requests
+
+
+Server Software:
+Server Hostname:        localhost
+Server Port:            9090
+
+Document Path:          /
+Document Length:        87 bytes
+
+Concurrency Level:      500
+Time taken for tests:   0.960 seconds
+Complete requests:      5000
+Failed requests:        0
+Write errors:           0
+Total transferred:      755000 bytes
+HTML transferred:       435000 bytes
+Requests per second:    5207.06 [#/sec] (mean)
+Time per request:       96.023 [ms] (mean)
+Time per request:       0.192 [ms] (mean, across all concurrent requests)
+Transfer rate:          767.84 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       27   42   4.6     43      51
+Processing:     7   50  10.6     48      76
+Waiting:        5   38   8.9     37      58
+Total:         51   92   9.6     91     113
+
+Percentage of the requests served within a certain time (ms)
+  50%     91
+  66%     94
+  75%     99
+  80%    102
+  90%    104
+  95%    106
+  98%    109
+  99%    110
+ 100%    113 (longest request)
+</pre>
+<strong>httpd2.c</strong><br />
+<form><textarea id="code2" name="code2">
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;event2/event.h&gt;
+#include &lt;event2/http.h&gt;
+#include &lt;event2/buffer.h&gt;</p>
+/**
+ * コールバック
+ */
+static void send_document_cb(struct evhttp_request *req, void *arg) {
+	struct evbuffer *evb = NULL;
+	evb = evbuffer_new();
+	if (!evb) {
+		fprintf(stderr, &quot;evbufferの生成に失敗しました。\n&quot;);
+		exit(1);
+	}
+	evbuffer_add_printf(
+		evb,
+		&quot;&lt;html&gt;\n&quot;
+		&quot;&lt;head&gt;\n&quot;
+		&quot;&lt;title&gt;libevent&lt;/title&gt;\n&quot;
+		&quot;&lt;/head&gt;\n&quot;
+		&quot;&lt;body&gt;\n&quot;
+		&quot;libeventテスト\n&quot;
+		&quot;&lt;/body&gt;\n&quot;
+		&quot;&lt;/html&gt;\n&quot;
+	);
+	evhttp_send_reply(req, 200, &quot;OK&quot;, evb);
+	evbuffer_free(evb);
+}
+/**
+ * メイン
+ */
+int main() {
+	struct event_base *base;
+	struct evhttp *http;
+	struct evhttp_bound_socket *handle;
+	unsigned short port = 9090;
+	base = event_base_new();
+	if (!base) {
+		fprintf(stderr, &quot;event_baseの生成に失敗しました。\n&quot;);
+		return 1;
+	}
+	/* Create a new evhttp object to handle requests. */
+	http = evhttp_new(base);
+	if (!http) {
+		fprintf(stderr, &quot;evhttpの生成に失敗しました。\n&quot;);
+		return 1;
+	}
+	// evhttp_set_cb(http, &quot;/dump&quot;, dump_request_cb, NULL);
+	/* デフォルトアクセス */
+	evhttp_set_gencb(http, send_document_cb, NULL);
+    /* アドレス・ポート指定 */
+	handle = evhttp_bind_socket_with_handle(http, &quot;0.0.0.0&quot;, port);
+	if (!handle) {
+		fprintf(stderr, &quot;%d. ポートを確保出来ませんでした。\n&quot;, (int)port);
+		return 1;
+	}
+	event_base_dispatch(base);
+	event_base_free(base);
+	return 0;
+}
+</textarea></form>
+<p><strong>コンパイル</strong></p>
+<pre class="ui visible message">
+gcc -L/usr/local/lib -levent -o httpd2 httpd2.c
+</pre>
+<hr>
+<p><strong>libevent2 + PHP</strong></p>
+<pre class="ui visible message">
+$ ab -n 5000 -c 500 http://localhost:9090/
+This is ApacheBench, Version 2.3 <$Revision: 655654 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+Completed 500 requests
+Completed 1000 requests
+Completed 1500 requests
+Completed 2000 requests
+Completed 2500 requests
+Completed 3000 requests
+Completed 3500 requests
+Completed 4000 requests
+Completed 4500 requests
+Completed 5000 requests
+Finished 5000 requests
+
+
+Server Software:
+Server Hostname:        localhost
+Server Port:            9090
+
+Document Path:          /
+Document Length:        87 bytes
+
+Concurrency Level:      500
+Time taken for tests:   0.997 seconds
+Complete requests:      5000
+Failed requests:        0
+Write errors:           0
+Total transferred:      755000 bytes
+HTML transferred:       435000 bytes
+Requests per second:    5013.12 [#/sec] (mean)
+Time per request:       99.738 [ms] (mean)
+Time per request:       0.199 [ms] (mean, across all concurrent requests)
+Transfer rate:          739.24 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        8   36   7.3     36      52
+Processing:    15   53  13.2     53     262
+Waiting:       10   41  12.2     41     243
+Total:         53   89  10.4     89     270
+
+Percentage of the requests served within a certain time (ms)
+  50%     89
+  66%     93
+  75%     95
+  80%     96
+  90%     99
+  95%    104
+  98%    108
+  99%    110
+ 100%    270 (longest request)
+</pre>
+<strong>httpd.php</strong><br />
+<form><textarea id="code3" name="code3">
+&lt;?php
+function _http_default($req) {
+	$buff = $req-&gt;getOutputBuffer();
+	$buff-&gt;add(
+		&quot;&lt;html&gt;\n&quot;.
+		&quot;&lt;head&gt;\n&quot;.
+		&quot;&lt;title&gt;libevent&lt;/title&gt;\n&quot;.
+		&quot;&lt;/head&gt;\n&quot;.
+		&quot;&lt;body&gt;\n&quot;.
+		&quot;libeventテスト\n&quot;.
+		&quot;&lt;/body&gt;\n&quot;.
+		&quot;&lt;/html&gt;\n&quot;
+	);
+	$req-&gt;sendReply(200, &quot;OK&quot;);
+}
+$base = new EventBase();
+$http = new EventHttp($base);
+$http-&gt;setAllowedMethods(EventHttpRequest::CMD_GET | EventHttpRequest::CMD_POST);
+// $http-&gt;setCallback(&quot;/err400&quot;, &quot;_http_400&quot;);
+$http-&gt;setDefaultCallback(&quot;_http_default&quot;);
+$http-&gt;bind(&quot;0.0.0.0&quot;, 9090);
+$base-&gt;loop();
+?&gt;
+</textarea></form>
+<hr>
+<p><strong>node.js</strong></p>
+<pre class="ui visible message">
+$ ab -n 5000 -c 500 http://localhost:9090/
+This is ApacheBench, Version 2.3 <$Revision: 655654 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+Completed 500 requests
+Completed 1000 requests
+Completed 1500 requests
+Completed 2000 requests
+Completed 2500 requests
+Completed 3000 requests
+Completed 3500 requests
+Completed 4000 requests
+Completed 4500 requests
+Completed 5000 requests
+Finished 5000 requests
+
+
+Server Software:
+Server Hostname:        localhost
+Server Port:            9090
+
+Document Path:          /
+Document Length:        87 bytes
+
+Concurrency Level:      500
+Time taken for tests:   2.448 seconds
+Complete requests:      5000
+Failed requests:        0
+Write errors:           0
+Total transferred:      940000 bytes
+HTML transferred:       435000 bytes
+Requests per second:    2042.88 [#/sec] (mean)
+Time per request:       244.752 [ms] (mean)
+Time per request:       0.490 [ms] (mean, across all concurrent requests)
+Transfer rate:          375.06 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    4  11.8      0      54
+Processing:     2   46  29.7     45     912
+Waiting:        2   45  29.8     45     912
+Total:          2   50  33.2     47     912
+
+Percentage of the requests served within a certain time (ms)
+  50%     47
+  66%     60
+  75%     68
+  80%     73
+  90%     85
+  95%    106
+  98%    122
+  99%    129
+ 100%    912 (longest request)
+</pre>
+<p><strong>httpd.js</strong><br />
+<form><textarea id="code4" name="code4">
+var http = require(&#8216;http&#8217;);
+var server = http.createServer(
+    function (request, response) {
+        response.writeHead(200, {&#8216;Content-Type&#8217;: &#8216;text/plain&#8217;});
+        response.write(
+            &quot;&lt;html&gt;\n&quot; +
+            &quot;&lt;head&gt;\n&quot; +
+            &quot;&lt;title&gt;libevent&lt;/title&gt;\n&quot; +
+            &quot;&lt;/head&gt;\n&quot; +
+            &quot;&lt;body&gt;\n&quot; +
+            &quot;libeventテスト\n&quot; +
+            &quot;&lt;/body&gt;\n&quot; +
+            &quot;&lt;/html&gt;\n&quot;
+        );
+        response.end();
+    }
+).listen(9090);
+</textarea></form>
+<hr>
+<p><strong>nginx</strong></p>
+<pre class="ui visible message">
+$ ab -n 5000 -c 500 http://localhost:9090/
+This is ApacheBench, Version 2.3 <$Revision: 655654 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+Completed 500 requests
+Completed 1000 requests
+Completed 1500 requests
+Completed 2000 requests
+Completed 2500 requests
+Completed 3000 requests
+Completed 3500 requests
+Completed 4000 requests
+Completed 4500 requests
+Completed 5000 requests
+Finished 5000 requests
+
+
+Server Software:        nginx/1.4.1
+Server Hostname:        localhost
+Server Port:            9090
+
+Document Path:          /
+Document Length:        168 bytes
+
+Concurrency Level:      500
+Time taken for tests:   1.084 seconds
+Complete requests:      5000
+Failed requests:        0
+Write errors:           0
+Non-2xx responses:      5000
+Total transferred:      1585000 bytes
+HTML transferred:       840000 bytes
+Requests per second:    4612.45 [#/sec] (mean)
+Time per request:       108.402 [ms] (mean)
+Time per request:       0.217 [ms] (mean, across all concurrent requests)
+Transfer rate:          1427.88 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       22   38   4.9     39      53
+Processing:    11   44  12.0     42     102
+Waiting:        8   33   8.5     33      65
+Total:         50   82  10.6     81     137
+
+Percentage of the requests served within a certain time (ms)
+  50%     81
+  66%     83
+  75%     84
+  80%     84
+  90%     91
+  95%    102
+  98%    123
+  99%    130
+ 100%    137 (longest request)
+</pre>
+<hr>
+<p><strong>shortfin</strong></p>
+<pre class="ui visible message">
+$ ab -n 5000 -c 500 http://localhost:9090/
+This is ApacheBench, Version 2.3 <$Revision: 655654 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+Completed 500 requests
+Completed 1000 requests
+Completed 1500 requests
+Completed 2000 requests
+Completed 2500 requests
+Completed 3000 requests
+Completed 3500 requests
+Completed 4000 requests
+Completed 4500 requests
+Completed 5000 requests
+Finished 5000 requests
+
+
+Server Software:        shortfin/0.9.5
+Server Hostname:        localhost
+Server Port:            9090
+
+Document Path:          /
+Document Length:        87 bytes
+
+Concurrency Level:      500
+Time taken for tests:   0.954 seconds
+Complete requests:      5000
+Failed requests:        0
+Write errors:           0
+Total transferred:      875000 bytes
+HTML transferred:       435000 bytes
+Requests per second:    5240.77 [#/sec] (mean)
+Time per request:       95.406 [ms] (mean)
+Time per request:       0.191 [ms] (mean, across all concurrent requests)
+Transfer rate:          895.64 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        5    9   2.3      9      23
+Processing:     2    9   2.0      9      19
+Waiting:        1    7   3.1      7      19
+Total:         12   18   1.9     19      40
+
+Percentage of the requests served within a certain time (ms)
+  50%     19
+  66%     19
+  75%     19
+  80%     19
+  90%     19
+  95%     20
+  98%     28
+  99%     28
+ 100%     40 (longest request)
+</pre>
+<p><del datetime="2013-08-18T07:34:34+00:00">単にHTMLを出力するだけなので、差が分からない結果でした。</del><br />
+Shortfinが抜きに出た速度がでています。</p>
+</div>
+            
+<div class="ui main text container">
+<h1 class="ui header"><a name="install">nginxとphpのインストール</a></h1>
+<p>nginxとphp5の設定など</p>
+<p><strong>nginxのインストール</strong></p>
+<pre class="ui visible message">
+sudo aptitude install -y nginx
+</pre>
+<p><strong>PHPインストール</strong></p>
+<pre class="ui visible message">
+sudo aptitude -y install php5 php5-common php5-curl php5-dev php5-fpm
+sudo aptitude -y install php5-gd php5-imagick php5-intl php5-json php5-mcrypt
+sudo aptitude -y install php5-memcache php5-mongo php5-mysql php5-xdebug
+</pre>
+<p><strong>nginxのサイト設定</strong></p>
+<pre class="ui visible message">
+sudo vi /etc/nginx/sites-available/sheeps.me
+</pre>
+<pre class="ui visible message">
+server {
+    server_name *.sheeps.me;
+
+    root /var/www/$host/www;
+    index index.html index.php;
+
+    location / {
+        try_files $uri $uri/ /index.php;
+    }
+
+    # API
+    location /api/ {
+        try_files $uri /api.php?$args;
+    }
+
+    location ~ \.php$ {
+        include /etc/nginx/fastcgi_params;
+        fastcgi_pass    unix:/var/run/php5-fpm.sock;
+        fastcgi_index   index.php;
+        fastcgi_param   SCRIPT_FILENAME /var/www/$host/www$fastcgi_script_name;
+    }
+
+    # serve static files directly
+    location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico|html|xml|bmp|swf|wmv)$ {
+        root /var/www/$host/www;
+        access_log off;
+        expires 30d;
+    }
+
+    location ~ /\.ht {
+        deny  all;
+    }
+}
+</pre>
+<p><strong>DNS　Aレコードの設定</strong></p>
+<pre class="ui visible message">
+a   *.sheeps.me     163.43.161.128
+</pre>
+<p><strong>php-fpmの設定</strong></p>
+<pre class="ui visible message">
+sudo vi /etc/php5/fpm/pool.d/www.conf
+</pre>
+<pre class="ui visible message">
+[www]
+listen = /var/run/php5-fpm.sock
+user = www-data
+group = www-data
+pm = dynamic
+pm.max_children = 10
+pm.start_servers = 4
+pm.min_spare_servers = 2
+pm.max_spare_servers = 6
+request_slowlog_timeout = 1s
+slowlog = /var/log/php5/$pool.log.slow
+chdir = /
+</pre>
+<p>5.4.6-1ubuntu1.1ではaptでインストールした場合にデフォルトで<br />
+unixドメインで動作するように設定されるようです。</p>
+<p><strong>ファイルオープン上限の確認</strong></p>
+<pre class="ui visible message">
+ulimit -n
+
+1024
+</pre>
+<p>アクセス数の多いサイトなどでは、/etc/security/limits.confなどで設定</p>
+<p><strong>XHProfのインストール</strong></p>
+<pre class="ui visible message">
+git clone https://github.com/facebook/xhprof.git
+cd ./xhprof/extension/
+phpize
+./configure
+make
+sudo make install
+</pre>
+<pre class="ui visible message">
+sudo vi /etc/php5/mods-available/xhprof.ini
+
+
+; configuration for php XHProf module
+; priority=20
+extension=xhprof.so
+</pre>
+<p><strong>Ketamaのインストール</strong></p>
+<pre class="ui visible message">
+git clone https://github.com/RJ/ketama.git
+cd ./ketama/libketama/
+make
+sudo make install
+
+cd ../php_ketama/
+phpize
+./configure
+make
+sudo make install
+</pre>
+<pre class="ui visible message">
+sudo vi /etc/php5/mods-available/ketama.ini
+
+
+; configuration for php Ketama module
+; priority=20
+extension=ketama.so
+</pre>
+</div>
 
     <div class="ui inverted vertical footer segment">
         <div class="ui center aligned container">
@@ -128,6 +801,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.45.0/lib/codemirror.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.45.0/mode/clike/clike.js"></script>
 <script>
     $(document).ready(function() {
         // fix main menu to page on passing
@@ -150,6 +824,31 @@
         $('.main.menu  .ui.dropdown').dropdown({
             on: 'hover'
         });
+
+        var editor1 = CodeMirror.fromTextArea(document.getElementById("code1"), {
+            mode: "text/x-c++src",
+            theme: "the-matrix",
+            lineNumbers: true
+        });
+
+        var editor2 = CodeMirror.fromTextArea(document.getElementById("code2"), {
+            mode: "text/x-c++src",
+            theme: "the-matrix",
+            lineNumbers: true
+        });
+
+        var editor3 = CodeMirror.fromTextArea(document.getElementById("code3"), {
+            mode: "text/x-c++src",
+            theme: "the-matrix",
+            lineNumbers: true
+        });
+
+        var editor4 = CodeMirror.fromTextArea(document.getElementById("code4"), {
+            mode: "text/x-c++src",
+            theme: "the-matrix",
+            lineNumbers: true
+        });
+
     });
 </script>
 </body>
